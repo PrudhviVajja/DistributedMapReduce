@@ -130,14 +130,15 @@ if __name__ == "__main__":
         rpyc.core.protocol.DEFAULT_CONFIG['allow_pickle'] = True
         t = ThreadedServer(Master, port=port, protocol_config=rpyc.core.protocol.DEFAULT_CONFIG)
         
-        l.info(f"Starting master at port = {port}")
+        # l.info(f"Starting master at port = {port}")
         try:
             t.start()
         except Exception:
             t.stop()
     except:
-        l.error("Unable to start Master. Check if the given port is available.")
-        sys.exit(0)
+        print('Error.!')
+        # l.error("Unable to start Master. Check if the given port is available.")
+        # sys.exit(0)
     
     
     
