@@ -33,21 +33,25 @@ if __name__ == "__main__":
     
     master_ip = gcp.get_ipaddress(compute, project, zone, 'master')
     print(master_ip[0], master_ip[1], type(master_ip[1]))
-    # gcp.delete_instance(compute, project, zone, 'master')
-    time.sleep(15)
+    # # gcp.delete_instance(compute, project, zone, 'master')
+    
+    # time.sleep(15)
     # Create KVStore
     kvstore_operation = gcp.create_instance(compute, project, zone, "kvstore", "kvstore.sh")
     gcp.wait_for_operation(compute, project, zone, kvstore_operation['name'])
     
     kvstore_ip = gcp.get_ipaddress(compute, project, zone, 'kvstore')
     print(kvstore_ip[0], kvstore_ip[1], type(kvstore_ip[0]))
-    time.sleep(15)
+    
+    # time.sleep(15)
     # Connect to master:
     while True:
         try:
             master_conn = rpyc.connect(master_ip[1], 8080, config={'allow_pickle':True, 'allow_public_attrs':True,
-                                                                   'sync_request_timeout': None}).root
-            print("Connected to master server...")
+                                                                   'sync_request_timeout': 240}).root
+            kv_conn = rpyc.connect(kvstore_ip[1], 8080, config={'allow_pickle':True, 'allow_public_attrs':True,
+                                                                   'sync_request_timeout': 240})
+            print("Connected to master and kvstore servers...")
             break
         except:
             continue
@@ -58,8 +62,12 @@ if __name__ == "__main__":
     kv_port = 8080
     filename = 'data.txt'
     # # Init_cluster
-    Print("Run Init_cluster in master server.")
-    master_conn.init_cluster(num_map, num_red, filename, kvstore_ip, kv_port, func)
+    print("Run Init_cluster in master server.")
+    print(master_conn.ack("Hi"))
+    
+    print(master_conn.connkv(kvstore_ip, kv_port))
+    
+    # master_conn.init_cluster(num_map, num_red, filename, kvstore_ip, kv_port, func)
     print("Make File Executed...")
         
     # Run MapReduce

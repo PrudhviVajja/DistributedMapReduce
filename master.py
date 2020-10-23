@@ -20,12 +20,13 @@ import logging as l
 import gcp
 
 # # Logging File:
-log_file="master_log.log"
+log_file = "master_log.log"
 if not os.path.exists(log_file):
     print("Creating Log File if it doesn't exists.")
     f = open(log_file, 'x')
     f.close()
-l.basicConfig(filename=log_file,filemode="a",format="Filename : %(filename)s--Line number: %(lineno)d--Process is: %(process)d--Time: %(asctime)s--%(message)s",level=l.INFO)
+l.basicConfig(filename=log_file, filemode="a",
+              format="Filename : %(filename)s--Line number: %(lineno)d--Process is: %(process)d--Time: %(asctime)s--%(message)s", level=l.INFO)
 
 
 class Master(rpyc.Service):
@@ -65,11 +66,12 @@ class Master(rpyc.Service):
         # Connect to KVStore:
         while True:
             try:
-                kvstore_conn = rpyc.connect(kv_ip[0], kv_port, config={'allow_pickle': True, 'allow_public_attrs': True}).root
+                kvstore_conn = rpyc.connect(kv_ip[0], kv_port, config={
+                                            'allow_pickle': True, 'allow_public_attrs': True}).root
                 l.info("Master is connected to Kvstore.")
             except:
                 continue
-            
+
         # Divide data accoring to mappers:
         try:
             if func == 'wordcount':
@@ -83,13 +85,12 @@ class Master(rpyc.Service):
                 l.info("Data is splited")
                 return True
             elif func == 'invertindex':
-                files = glob.glob1('invertindex',"*.txt")
-                for i,f in enumerate(files):
+                files = glob.glob1('invertindex', "*.txt")
+                for i, f in enumerate(files):
                     self.mapper['mapper'+str(i)] = f
         except:
             l.error("Unable to split data as per requirment.")
-        
-        
+
         # self.start_mappers(map_count)
 
         # self.start_reducers(red_count)
@@ -152,16 +153,29 @@ class Master(rpyc.Service):
     def exposed_status(self, status):
         print(status)
 
-    def exposed_give_data(self):
-        pass
+    def exposed_connkv(self, ip, port):
+        while True:
+            try:
+                kvstore_conn = rpyc.connect(kv_ip[0], kv_port, config={
+                                            'allow_pickle': True, 'allow_public_attrs': True}).root
+                l.info("Master is connected to Kvstore.")
+                return "Connected to KV Store."
+            except:
+                continue
+        return "Not connected to kv "
+
+    def exposed_ack(self, var):
+        return var
         # for mapp in self.mapper_list:
 
 
 if __name__ == "__main__":
     scopes = ['https://www.googleapis.com/auth/cloud-platform']
     sa_file = 'prudhvi-vajja-f62a24ed2484.json'
-    credentials = service_account.Credentials.from_service_account_file(sa_file, scopes=scopes)
-    compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
+    credentials = service_account.Credentials.from_service_account_file(
+        sa_file, scopes=scopes)
+    compute = googleapiclient.discovery.build(
+        'compute', 'v1', credentials=credentials)
     project = 'prudhvi-vajja'
     zone = 'northamerica-northeast1-a'
 
