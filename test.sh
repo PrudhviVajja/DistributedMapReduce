@@ -18,8 +18,8 @@ sudo chmod 777 /usr/mapreduce
 cd /usr/mapreduce
 
 # Git Clone
-rm -rf Distributed-Mapreduce
-sudo git clone https://github.com/PrudhviVajja/Distribute-MapReduce.git
+rm -rf DistributedMapreduce
+sudo git clone https://github.com/PrudhviVajja/DistributedMapReduce.git
 
 ls
 echo $(ls)
@@ -29,7 +29,7 @@ echo "Cloning is Done..."
 
 # Run the Master program in background
 # sudo chmod 777 /Distributed-Mapreduce
-cd Distributed-Mapreduce
+cd DistributedMapreduce
 echo $(ls)
 ls
 sudo python3 test.py 
