@@ -17,10 +17,11 @@ from six.moves import input
 
 if __name__ == "__main__":
     # Intialize credentials:
-    scopes = ['https://www.googleapis.com/auth/cloud-platform']
-    sa_file = 'prudhvi-vajja-f62a24ed2484.json'
-    credentials = service_account.Credentials.from_service_account_file(sa_file, scopes=scopes)
-    compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
+    # scopes = ['https://www.googleapis.com/auth/cloud-platform']
+    # sa_file = 'prudhvi-vajja-f62a24ed2484.json'
+    # credentials = service_account.Credentials.from_service_account_file(sa_file, scopes=scopes)
+    # compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
+    compute = googleapiclient.discovery.build('compute', 'v1')
     project = 'prudhvi-vajja'
     zone = 'northamerica-northeast1-a'
     
