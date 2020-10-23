@@ -13,13 +13,13 @@ from six.moves import input
 import logging as l
 import gcp
 
-# Logging File:
-log_file="master_log.log"
-if not os.path.exists(log_file):
-    print("Creating Log File if it doesn't exists.")
-    f = open(log_file, 'x')
-    f.close()
-l.basicConfig(filename=log_file,filemode="a",format="Filename : %(filename)s--Line number: %(lineno)d--Process is: %(process)d--Time: %(asctime)s--%(message)s",level=l.INFO)
+# # Logging File:
+# log_file="master_log.log"
+# if not os.path.exists(log_file):
+#     print("Creating Log File if it doesn't exists.")
+#     f = open(log_file, 'x')
+#     f.close()
+# l.basicConfig(filename=log_file,filemode="a",format="Filename : %(filename)s--Line number: %(lineno)d--Process is: %(process)d--Time: %(asctime)s--%(message)s",level=l.INFO)
 
 
 class Master(rpyc.Service):
