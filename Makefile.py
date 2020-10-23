@@ -1,5 +1,6 @@
 import gcp
 import rpyc
+import time
 
 import googleapiclient.discovery
 from google.oauth2 import service_account
@@ -36,7 +37,7 @@ if __name__ == "__main__":
     # Create KVStore
     # kvstore_operation = gcp.create_instance(compute, project, zone, "kvstore", "kvstore.sh")
     # gcp.wait_for_operation(compute, project, zone, kvstore_operation['name'])
-    
+    time.sleep(10)
     # kvstore_ip = gcp.get_ipaddress(compute, project, zone, 'kvstore')
     try:
         # Connect to master:

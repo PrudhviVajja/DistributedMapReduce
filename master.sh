@@ -49,4 +49,4 @@ echo $(pwd)
 
 echo $(ls)
 ls
-sudo python3 master.py
+sudo python3 master.py &
