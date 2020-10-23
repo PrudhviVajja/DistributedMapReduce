@@ -32,4 +32,4 @@ echo "Cloning is Done..."
 cd /usr/mapreduce/DistributedMapreduce
 echo $(ls)
 ls
-sudo python3 master.py
+sudo python3 DistributedMapreduce/master.py
