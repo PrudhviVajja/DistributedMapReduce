@@ -24,12 +24,14 @@ git clone https://github.com/PrudhviVajja/DistributedMapReduce.git
 ls
 echo $(ls)
 echo "Cloning is Done..."
+
+echo $(pwd)
 # chmod 777 /home/Distributed-Mapreduce/master.py
 # chmod 777 /home/Distributed-Mapreduce/gcp.py
 
 # Run the Master program in background
 # sudo chmod 777 /Distributed-Mapreduce
-cd /usr/mapreduce/DistributedMapreduce
+cd ./DistributedMapreduce
 echo $(ls)
 ls
 sudo python3 DistributedMapreduce/master.py

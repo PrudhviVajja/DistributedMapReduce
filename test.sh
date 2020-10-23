@@ -29,7 +29,7 @@ echo "Cloning is Done..."
 
 # Run the Master program in background
 # sudo chmod 777 /Distributed-Mapreduce
-cd /usr/mapreduce/DistributedMapreduce
+cd ./DistributedMapreduce
 echo $(ls)
 ls
 sudo python3 DistributedMapreduce/test.py 
