@@ -67,7 +67,7 @@ class Master(rpyc.Service):
     def start_mappers(self, map_count):
         self.map_ips = []
         for i in range(map_count):
-            mapper_operation = gcp.create_instance(compute, project, zone, f"mapper-{i}", "mapper.sh")
+            mapper_operation = gcp.create_instance(compute, project, zone, "mapper", "mapper.sh")
             gcp.wait_for_operation(compute, project, zone, mapper_operation['name'])
             map_ip = gcp.get_ipaddress(compute, project, zone, f"mapper-{i}")
             self.map_ips.append(map_ip[0])
@@ -75,10 +75,10 @@ class Master(rpyc.Service):
              
     def start_reducers(self, red_count):
         self.red_ips = []
-        for i in range(map_count):
-            reducer_operation = gcp.create_instance(compute, project, zone, f"mapper-{i}", "mapper.sh")
+        for i in range(red_count):
+            reducer_operation = gcp.create_instance(compute, project, zone, "reducer", "reducer.sh")
             gcp.wait_for_operation(compute, project, zone, reducer_operation['name'])
-            red_ip = gcp.get_ipaddress(compute, project, zone, f"mapper-{i}")
+            red_ip = gcp.get_ipaddress(compute, project, zone, "reducer")
             self.red_ips.append(red_ip[0])
             
             
