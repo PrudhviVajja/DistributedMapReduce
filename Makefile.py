@@ -24,7 +24,8 @@ if __name__ == "__main__":
     # compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
     compute = googleapiclient.discovery.build('compute', 'v1')
     project = 'prudhvi-vajja'
-    zone = 'northamerica-northeast1-a'
+    # zone = 'northamerica-northeast1-b'
+    zone = 'us-central1-b'
     
     # Create Master:
     master_operation = gcp.create_instance(compute, project, zone, "master", "master.sh")
@@ -33,17 +34,20 @@ if __name__ == "__main__":
     master_ip = gcp.get_ipaddress(compute, project, zone, 'master')
     print(master_ip[0], master_ip[1], type(master_ip[1]))
     # gcp.delete_instance(compute, project, zone, 'master')
-    
+    time.sleep(15)
     # Create KVStore
     kvstore_operation = gcp.create_instance(compute, project, zone, "kvstore", "kvstore.sh")
     gcp.wait_for_operation(compute, project, zone, kvstore_operation['name'])
     
     kvstore_ip = gcp.get_ipaddress(compute, project, zone, 'kvstore')
-    
+    print(kvstore_ip[0], kvstore_ip[1], type(kvstore_ip[0]))
+    time.sleep(15)
     # Connect to master:
     while True:
         try:
-            master_conn = rpyc.connect(master_ip[1], 8080, config={'allow_pickle':True, 'allow_public_attrs':True}).root
+            master_conn = rpyc.connect(master_ip[1], 8080, config={'allow_pickle':True, 'allow_public_attrs':True,
+                                                                   'sync_request_timeout': None}).root
+            print("Connected to master server...")
             break
         except:
             continue
@@ -53,8 +57,8 @@ if __name__ == "__main__":
     num_red = 2
     kv_port = 8080
     filename = 'data.txt'
-    
     # # Init_cluster
+    Print("Run Init_cluster in master server.")
     master_conn.init_cluster(num_map, num_red, filename, kvstore_ip, kv_port, func)
     print("Make File Executed...")
         
@@ -66,7 +70,7 @@ if __name__ == "__main__":
     
     
     
-    
+    # master_conn.init_cluster(2,2, 'data.txt', ["34.122.103.101", "10.128.0.5"], 8080, 'wordcount')
     
     
     

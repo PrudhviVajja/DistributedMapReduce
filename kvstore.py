@@ -184,8 +184,8 @@ class KV_store(rpyc.Service):
     #     else:
     #         os.kill(pid, signal.SIGTERM)
 
-    # def exposed_ack(self):
-    #     return True
+    def exposed_ack(self, var):
+        return var
 
 
 if __name__ == "__main__":
