@@ -55,7 +55,7 @@ class Master(rpyc.Service):
             gcp.wait_for_operation(
                 compute, project, zone, sample_opeartion['name'])
             print(" Gcp is connected")
-            gcp.delete_instance(compute, project, zone, "demo-instance")
+            # gcp.delete_instance(compute, project, zone, "demo-instance")
             return "Sucessuly created an instance"
         except:
             return "Instance was not created"

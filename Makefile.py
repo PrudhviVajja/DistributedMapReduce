@@ -52,6 +52,7 @@ if __name__ == "__main__":
             # gcp.delete_instance(compute, project, zone, 'master')
             # print("Instance is not created.")
             continue
+    print("Make File Executed...")
         
     # Run MapReduce
     # master_conn.run_mapreduce()
