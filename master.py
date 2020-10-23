@@ -69,7 +69,7 @@ class Master(rpyc.Service):
         for i in range(map_count):
             mapper_operation = gcp.create_instance(compute, project, zone, "mapper", "mapper.sh")
             gcp.wait_for_operation(compute, project, zone, mapper_operation['name'])
-            map_ip = gcp.get_ipaddress(compute, project, zone, f"mapper-{i}")
+            map_ip = gcp.get_ipaddress(compute, project, zone, "mapper")
             self.map_ips.append(map_ip[0])
             
              
