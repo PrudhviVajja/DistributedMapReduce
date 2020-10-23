@@ -35,27 +35,31 @@ if __name__ == "__main__":
     # gcp.delete_instance(compute, project, zone, 'master')
     
     # Create KVStore
-    # kvstore_operation = gcp.create_instance(compute, project, zone, "kvstore", "kvstore.sh")
-    # gcp.wait_for_operation(compute, project, zone, kvstore_operation['name'])
-    time.sleep(10)
-    # kvstore_ip = gcp.get_ipaddress(compute, project, zone, 'kvstore')
+    kvstore_operation = gcp.create_instance(compute, project, zone, "kvstore", "kvstore.sh")
+    gcp.wait_for_operation(compute, project, zone, kvstore_operation['name'])
+    
+    kvstore_ip = gcp.get_ipaddress(compute, project, zone, 'kvstore')
+    
+    # Connect to master:
     while True:
         try:
-            # Connect to master:
             master_conn = rpyc.connect(master_ip[1], 8080, config={'allow_pickle':True, 'allow_public_attrs':True}).root
-            
-            # # Init_cluster
-            # # master_conn.init_cluster()
-            print(master_conn.create_delete_instance())
             break
         except:
-            # gcp.delete_instance(compute, project, zone, 'master')
-            # print("Instance is not created.")
             continue
+    
+    func = 'wordcount'
+    num_map = 2
+    num_red = 2
+    kv_port = 8080
+    filename = 'data.txt'
+    
+    # # Init_cluster
+    master_conn.init_cluster(num_map, num_red, filename, kvstore_ip, kv_port, func)
     print("Make File Executed...")
         
     # Run MapReduce
-    # master_conn.run_mapreduce()
+    # master_conn.run_mapreduce(num_map, num_red, kvstore_ip, kv_port, func)
     
     # Destroy cluster
     

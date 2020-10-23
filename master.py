@@ -20,12 +20,12 @@ import logging as l
 import gcp
 
 # # Logging File:
-# log_file="master_log.log"
-# if not os.path.exists(log_file):
-#     print("Creating Log File if it doesn't exists.")
-#     f = open(log_file, 'x')
-#     f.close()
-# l.basicConfig(filename=log_file,filemode="a",format="Filename : %(filename)s--Line number: %(lineno)d--Process is: %(process)d--Time: %(asctime)s--%(message)s",level=l.INFO)
+log_file="master_log.log"
+if not os.path.exists(log_file):
+    print("Creating Log File if it doesn't exists.")
+    f = open(log_file, 'x')
+    f.close()
+l.basicConfig(filename=log_file,filemode="a",format="Filename : %(filename)s--Line number: %(lineno)d--Process is: %(process)d--Time: %(asctime)s--%(message)s",level=l.INFO)
 
 
 class Master(rpyc.Service):
@@ -60,16 +60,43 @@ class Master(rpyc.Service):
         except:
             return "Instance was not created"
 
-    def exposed_init_cluster(self, map_count, red_count, input_file, kv_ip, kv_port):
-        kvstore_conn = rpyc.connect(kv_ip, kv_port, config={
-                                    'allow_pickle': True, 'allow_public_attrs': True}).root
+    def exposed_init_cluster(self, map_count, red_count, filename, kv_ip, kv_port, func):
+        l.info("Client has started init_cluster..")
+        # Connect to KVStore:
+        while True:
+            try:
+                kvstore_conn = rpyc.connect(kv_ip[0], kv_port, config={'allow_pickle': True, 'allow_public_attrs': True}).root
+                l.info("Master is connected to Kvstore.")
+            except:
+                continue
+            
+        # Divide data accoring to mappers:
+        try:
+            if func == 'wordcount':
+                f = open(filename, 'r')
+                size = os.stat(filename).st_size
+                for i in range(map_count):
+                    data = f.readlines(size//map_count)
+                    tmp = 'mapper' + str(i) + '.txt'
+                    kvstore_conn.save_to_file(data, tmp)
+                f.close()
+                l.info("Data is splited")
+                return True
+            elif func == 'invertindex':
+                files = glob.glob1('invertindex',"*.txt")
+                for i,f in enumerate(files):
+                    self.mapper['mapper'+str(i)] = f
+        except:
+            l.error("Unable to split data as per requirment.")
+        
+        
         # self.start_mappers(map_count)
 
         # self.start_reducers(red_count)
 
-    def exposed_run_mapreduce(self):
+    def exposed_run_mapreduce(self, map_count, red_count, kv_ip, kv_port, func):
         # Start Mappers
-        self.start_mappers(map_count)
+        self.start_mappers(map_count, kv_ip, kv_port)
 
         # Fault Tolerance
         self.fault_tolerance()
@@ -77,7 +104,7 @@ class Master(rpyc.Service):
         # Start Reducers
         self.start_reducers(red_count)
 
-    def start_mappers(self, map_count):
+    def start_mappers(self, map_count, kv_ip, kv_port):
         self.map_ips = []
         for i in range(map_count):
             mapper_operation = gcp.create_instance(

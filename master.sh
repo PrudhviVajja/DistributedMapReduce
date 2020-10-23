@@ -45,9 +45,10 @@ cd /usr/mapreduce
 cd /usr/mapreduce
 cd ./DistributedMapreduce
 cd /usr/mapreduce/DistributedMapReduce
+
 echo $(pwd)
 
 echo $(ls)
 ls
-sudo chmod +x master.py
+sudo chmod +x master.py # Executable permissions to the file
 nohup /usr/mapreduce/DistributedMapReduce/master.py &
