@@ -46,4 +46,6 @@ cd /usr/mapreduce/DistributedMapReduce
 echo $(pwd)
 echo $(ls)
 ls
-sudo python3 test.py &
+sudo chmod +x test.py
+nohup /usr/mapreduce/DistributedMapReduce/test.py &
+# sudo python3 test.py &

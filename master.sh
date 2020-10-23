@@ -49,4 +49,5 @@ echo $(pwd)
 
 echo $(ls)
 ls
-sudo python3 master.py &
+sudo chmod +x master.py
+nohup /usr/mapreduce/DistributedMapReduce/master.py &
