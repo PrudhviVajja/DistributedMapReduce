@@ -30,6 +30,8 @@ if __name__ == "__main__":
     
     master_ip = gcp.get_ipaddress(compute, project, zone, 'master')
     
+    # gcp.delete_instance(compute, project, zone, 'master')
+    
     # Create KVStore
     # kvstore_operation = gcp.create_instance(compute, project, zone, "kvstore", "kvstore.sh")
     # gcp.wait_for_operation(compute, project, zone, kvstore_operation['name'])
@@ -37,14 +39,14 @@ if __name__ == "__main__":
     # kvstore_ip = gcp.get_ipaddress(compute, project, zone, 'kvstore')
     
     # Connect to master:
-    master_conn = rpyc.connect(master_ip[0], 8080, config={'allow_pickle':True, 'allow_public_attrs':True}).root
+    # master_conn = rpyc.connect(master_ip[1], 8080, config={'allow_pickle':True, 'allow_public_attrs':True}).root
     
-    # Init_cluster
-    # master_conn.init_cluster()
-    print(master_conn.create_delete_instance())
+    # # Init_cluster
+    # # master_conn.init_cluster()
+    # print(master_conn.create_delete_instance())
     
     # Run MapReduce
-    master_conn.run_mapreduce()
+    # master_conn.run_mapreduce()
     
     # Destroy cluster
     

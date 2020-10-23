@@ -42,7 +42,7 @@ class Master(rpyc.Service):
     
     def exposed_create_delete_instance(self):
         try:
-            sample_opeartion = gcp.create_instance(compute, project, zone, f"demo-instance", "test.sh")
+            sample_opeartion = gcp.create_instance(compute, project, zone, "demo-instance", "test.sh")
             gcp.wait_for_operation(compute, project, zone, sample_opeartion['name'])
             return "Sucessuly created an instance"
         except:

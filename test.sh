@@ -1,6 +1,6 @@
 !/bin/bash
 
-gcloud compute --project chaturvedakash-amarendra firewall-rules create vpnrulemaster --allow tcp:8080
+gcloud compute --project prudhvi-vajja firewall-rules create vpnrulemaster --allow tcp:8080
 sudo apt-get -y update
 sudo apt-get -y install git
 
