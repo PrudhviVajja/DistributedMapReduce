@@ -111,7 +111,8 @@ class Master(rpyc.Service):
         print(status)
         
     def exposed_give_data(self):
-        for mapp in self.mapper_list:
+        pass
+        # for mapp in self.mapper_list:
     
     
 
