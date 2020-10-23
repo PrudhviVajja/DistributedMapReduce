@@ -6,7 +6,10 @@ import threading, os, glob, time, sys
 from multiprocessing import Process
 import socket
 
-from tqdm import tqdm
+
+import googleapiclient.discovery
+from google.oauth2 import service_account
+from six.moves import input
 import logging as l
 import gcp
 
