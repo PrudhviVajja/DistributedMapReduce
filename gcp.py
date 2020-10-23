@@ -11,7 +11,7 @@ from six.moves import input
 #source: https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/compute/api/create_instance.py
 
 # [START create_instance]
-def create_instance(compute, project, zone, name):
+def create_instance(compute, project, zone, name, script):
     # Get the latest Debian Jessie image.
     image_response = compute.images().getFromFamily(
         project='debian-cloud', family='debian-9').execute()
@@ -21,9 +21,7 @@ def create_instance(compute, project, zone, name):
     machine_type = "zones/%s/machineTypes/n1-standard-1" % zone
     startup_script = open(
         os.path.join(
-            os.path.dirname(__file__), 'startup-script.sh'), 'r').read()
-    image_url = "http://storage.googleapis.com/gce-demo-input/photo.jpg"
-    image_caption = "Ready for dessert?"
+            os.path.dirname(__file__), script), 'r').read()
 
     config = {
         'name': name,
@@ -66,12 +64,6 @@ def create_instance(compute, project, zone, name):
                 # instance upon startup.
                 'key': 'startup-script',
                 'value': startup_script
-            }, {
-                'key': 'url',
-                'value': image_url
-            }, {
-                'key': 'text',
-                'value': image_caption
             }]
         }
     }
@@ -124,36 +116,36 @@ def get_ipaddress(compute, project, zone, name):
 # [END getIPAddresses]
 
 
-if __name__ == '__main__':
-    scopes = ['https://www.googleapis.com/auth/cloud-platform']
-    sa_file = 'prudhvi-vajja-f62a24ed2484.json'
-    credentials = service_account.Credentials.from_service_account_file(sa_file, scopes=scopes)
-    compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
-    project = 'prudhvi-vajja'
-    zone = 'northamerica-northeast1-a'
-    instance_name = 'demo-instance'
+# if __name__ == '__main__':
+#     scopes = ['https://www.googleapis.com/auth/cloud-platform']
+#     sa_file = 'prudhvi-vajja-f62a24ed2484.json'
+#     credentials = service_account.Credentials.from_service_account_file(sa_file, scopes=scopes)
+#     compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
+#     project = 'prudhvi-vajja'
+#     zone = 'northamerica-northeast1-a'
+#     instance_name = 'demo-instance'
     
-    # create instance
-    # operation = create_instance(compute, project, zone, instance_name)
-    # wait_for_operation(compute, project, zone, operation['name'])
+#     # create instance
+#     # operation = create_instance(compute, project, zone, instance_name)
+#     # wait_for_operation(compute, project, zone, operation['name'])
     
-    #list instances
-    instances = list_instances(compute, project, zone)
+#     #list instances
+#     instances = list_instances(compute, project, zone)
     
-    print('Instances in project %s and zone %s:' % (project, zone))
-    for instance in instances:
-        print(' - ' + instance['name'])
+#     print('Instances in project %s and zone %s:' % (project, zone))
+#     for instance in instances:
+#         print(' - ' + instance['name'])
     
-    #delete instance
-    # operation = delete_instance(compute, project, zone, instance_name)
-    # wait_for_operation(compute, project, zone, operation['name'])
+#     #delete instance
+#     # operation = delete_instance(compute, project, zone, instance_name)
+#     # wait_for_operation(compute, project, zone, operation['name'])
     
-    #list instances
-    instances = list_instances(compute, project, zone)
+#     #list instances
+#     instances = list_instances(compute, project, zone)
     
-    print('Instances in project %s and zone %s:' % (project, zone))
-    for instance in instances:
-        print(' - ' + instance['name'])
+#     print('Instances in project %s and zone %s:' % (project, zone))
+#     for instance in instances:
+#         print(' - ' + instance['name'])
         
-    int_ip, ext_ip = getIPAddresses(compute, project, zone, 'test-instance')
-    print(int_ip, ext_ip)
+#     int_ip, ext_ip = getIPAddresses(compute, project, zone, 'test-instance')
+#     print(int_ip, ext_ip)

@@ -1,0 +1,1 @@
+print("Instance was created succesfully let's start coding further...")
