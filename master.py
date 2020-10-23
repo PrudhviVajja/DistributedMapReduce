@@ -154,15 +154,15 @@ class Master(rpyc.Service):
         print(status)
 
     def exposed_connkv(self, ip, port):
-        while True:
+        # while True:
             try:
-                kvstore_conn = rpyc.connect(kv_ip[0], kv_port, config={
+                kvstore_conn = rpyc.connect(ip, port, config={
                                             'allow_pickle': True, 'allow_public_attrs': True}).root
                 l.info("Master is connected to Kvstore.")
-                return "Connected to KV Store."
+                tmp = kvstore_conn.ack("Hey!")
+                return  tmp + "Connected to KV Store."
             except:
-                continue
-        return "Not connected to kv "
+                return "Not connected to KV."
 
     def exposed_ack(self, var):
         return var
