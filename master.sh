@@ -25,5 +25,6 @@ git clone https://github.com/PrudhviVajja/Distribute-MapReduce.git
 # chmod 777 /home/Distributed-Mapreduce/gcp.py
 
 # Run the Master program in background
+sudo chmod 777 Distributed-Mapreduce
 cd Distributed-Mapreduce
 python3 master.py &
