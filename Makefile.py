@@ -28,8 +28,8 @@ if __name__ == "__main__":
     zone = 'us-central1-b'
     
     # Create Master:
-    # master_operation = gcp.create_instance(compute, project, zone, "master", "master.sh")
-    # gcp.wait_for_operation(compute, project, zone, master_operation['name'])
+    master_operation = gcp.create_instance(compute, project, zone, "master", "master.sh")
+    gcp.wait_for_operation(compute, project, zone, master_operation['name'])
     
     master_ip = gcp.get_ipaddress(compute, project, zone, 'master')
     print(master_ip[0], master_ip[1], type(master_ip[1]))
@@ -37,8 +37,8 @@ if __name__ == "__main__":
     
     # time.sleep(15)
     # Create KVStore
-    # kvstore_operation = gcp.create_instance(compute, project, zone, "kvstore", "kvstore.sh")
-    # gcp.wait_for_operation(compute, project, zone, kvstore_operation['name'])
+    kvstore_operation = gcp.create_instance(compute, project, zone, "kvstore", "kvstore.sh")
+    gcp.wait_for_operation(compute, project, zone, kvstore_operation['name'])
     
     kvstore_ip = gcp.get_ipaddress(compute, project, zone, 'kvstore')
     print(kvstore_ip[0], kvstore_ip[1], type(kvstore_ip[0]))
@@ -65,9 +65,9 @@ if __name__ == "__main__":
     print("Run Init_cluster in master server.")
     print(master_conn.ack("Hi"))
     
-    print(master_conn.connkv(kvstore_ip[0], kv_port))
+    # print(master_conn.connkv(kvstore_ip[0], kv_port))
     
-    # master_conn.init_cluster(num_map, num_red, filename, kvstore_ip, kv_port, func)
+    master_conn.initcluster(num_map, num_red, filename, kvstore_ip[0], kv_port, func)
     print("Make File Executed...")
         
     # Run MapReduce

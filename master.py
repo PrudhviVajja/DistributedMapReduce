@@ -61,14 +61,15 @@ class Master(rpyc.Service):
         except:
             return "Instance was not created"
 
-    def exposed_init_cluster(self, map_count, red_count, filename, kv_ip, kv_port, func):
+    def exposed_initcluster(self, map_count, red_count, filename, kv_ip, kv_port, func):
         l.info("Client has started init_cluster..")
         # Connect to KVStore:
         while True:
             try:
-                kvstore_conn = rpyc.connect(kv_ip[0], kv_port, config={
-                                            'allow_pickle': True, 'allow_public_attrs': True}).root
+                kvstore_conn = rpyc.connect(kv_ip, kv_port, config={'allow_pickle': True, 'allow_public_attrs': True,
+                                                                    'sync_request_timeout': 240}).root
                 l.info("Master is connected to Kvstore.")
+                break
             except:
                 continue
 
@@ -155,14 +156,14 @@ class Master(rpyc.Service):
 
     def exposed_connkv(self, ip, port):
         # while True:
-            try:
-                kvstore_conn = rpyc.connect(ip, port, config={
-                                            'allow_pickle': True, 'allow_public_attrs': True}).root
-                l.info("Master is connected to Kvstore.")
-                tmp = kvstore_conn.ack("Hey!")
-                return  tmp + "Connected to KV Store."
-            except:
-                return "Not connected to KV."
+        try:
+            kvstore_conn = rpyc.connect(ip, port, config={
+                                        'allow_pickle': True, 'allow_public_attrs': True}).root
+            l.info("Master is connected to Kvstore.")
+            tmp = kvstore_conn.ack("Hey!")
+            return tmp + "Connected to KV Store."
+        except:
+            return "Not connected to KV."
 
     def exposed_ack(self, var):
         return var
