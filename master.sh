@@ -8,23 +8,24 @@ sudo apt-get -y install git
 # Install Requirments
 curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
 python3 get-pip.py
-pip install --upgrade google-api-python-client
-pip install oauth2client
-pip install rpyc
+pip3 install --upgrade google-api-python-client
+pip3 install oauth2client
+pip3 install rpyc
 
 
-sudo mkdir /usr/app
-sudo chmod 777 /usr/app
-cd /usr/app
+sudo mkdir /usr
+sudo chmod 777 /usr
+cd /usr
 
 # Git Clone
 rm -rf Distributed-Mapreduce
-git clone https://github.com/PrudhviVajja/Distribute-MapReduce.git
+sudo git clone https://github.com/PrudhviVajja/Distribute-MapReduce.git
 
+echo "Cloning is Done..."
 # chmod 777 /home/Distributed-Mapreduce/master.py
 # chmod 777 /home/Distributed-Mapreduce/gcp.py
-
+sleep 5
 # Run the Master program in background
-sudo chmod 777 Distributed-Mapreduce
+sudo chmod 777 /Distributed-Mapreduce
 cd Distributed-Mapreduce
-python3 master.py &
+sudo python3 master.py

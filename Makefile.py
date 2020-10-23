@@ -47,7 +47,7 @@ if __name__ == "__main__":
         print(master_conn.create_delete_instance())
     except:
         # gcp.delete_instance(compute, project, zone, 'master')
-        print("Instance Deleted.")
+        print("Instance is not created.")
     
     # Run MapReduce
     # master_conn.run_mapreduce()
