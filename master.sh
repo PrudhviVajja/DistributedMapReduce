@@ -44,6 +44,7 @@ echo $(pwd)
 # cd /usr/mapreduce
 # cd /usr/mapreduce
 # cd ./DistributedMapreduce
+sudo chmod -R a+rwx /usr/mapreduce/DistributedMapReduce
 cd /usr/mapreduce/DistributedMapReduce
 
 echo $(pwd)

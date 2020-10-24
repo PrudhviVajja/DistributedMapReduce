@@ -30,6 +30,7 @@ echo $(pwd)
 # chmod 777 /home/Distributed-Mapreduce/gcp.py
 
 # Run the Master program in background
+sudo chmod -R a+rwx /usr/mapreduce/DistributedMapReduce
 cd /usr/mapreduce/DistributedMapReduce
 
 echo $(pwd)

@@ -9,19 +9,14 @@ Supported tasks are:
 
 ## Design
 
-MapReduce applications show their true potential when run on a cluster of commodity machines (*As it is highly scalable*), our implementation of mimics the MapReduce concept in a local environment using `multiprocessing`.
+MapReduce applications show their true potential when run on a cluster of commodity machines (*As it is highly scalable*), 
 
 Attributes:
 
 - Master server 
-
 - Key-Value server 
-
-- Worker *(Contains both Mapper and Reducer Code.)*
-
-  - Mapper 
-
-  - Reducer
+- Mapper Server 
+- Reducer Server
 
 ##### 1. Master Server:
 
@@ -38,6 +33,20 @@ The Mapper task reads the contents of the corresponding input split. It parses k
 ##### 4. Reducer:
 
 The Reducers read the intermediate keys allocated to its input split. it passes the key and the corresponding set of values to the user’s Reduce function. and then all the outputs of reducers are combined to form the final output file.
+
+#### Design Flow
+
+```mermaid
+graph TD;
+		A(User Program)-->|creates and connects|B(Master Server);
+		A(User Program)-->C(Key Value Server);
+		B(Master Server)-->D(Mapper);
+		
+```
+
+
+
+
 
 **Extra files :** 
 
