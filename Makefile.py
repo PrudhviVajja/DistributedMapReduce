@@ -43,7 +43,7 @@ if __name__ == "__main__":
     kvstore_ip = gcp.get_ipaddress(compute, project, zone, 'kvstore')
     print(kvstore_ip[0], kvstore_ip[1], type(kvstore_ip[0]))
     
-    # time.sleep(15)
+    time.sleep(60) # wait for master and kvstore
     # Connect to master:
     while True:
         try:

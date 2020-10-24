@@ -45,7 +45,8 @@ class KV_store(rpyc.Service):
                 tmp = 'reducer' + str(i) + '.txt'
                 if os.path.exists(tmp):
                     os.remove(tmp)
-                f = open(tmp, "x")
+                f = open(tmp, "w")
+                l.info(tmp + 'is craeted')
                 f.close()
             l.info("reducer files are created")
                 
@@ -54,14 +55,15 @@ class KV_store(rpyc.Service):
                     tmp = 'mapper' + str(i) + '.txt'
                     if os.path.exists(tmp):
                         os.remove(tmp)
-                    f = open(tmp, "x")
+                    f = open(tmp, "w")
                     f.close()
                 l.info("mapper files are created ")
             
             tmp = self.func + '.txt'
             if os.path.exists(tmp):
                 os.remove(tmp)
-                f = open(tmp, "x")
+                f = open(tmp, "w")
+                l.info(tmp + 'is created')
                 f.close()
             l.info("final output file is created.")
         except:
