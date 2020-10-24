@@ -46,7 +46,12 @@ class KV_store(rpyc.Service):
                 if os.path.exists(tmp):
                     os.remove(tmp)
                 f = open(tmp, "w")
-                l.info(tmp + 'is craeted')
+                command = 'sudo chmod 777 ' + tmp
+                out = os.system(command)
+                if out == 0:
+                    l.info(tmp + 'is craeted')
+                else:
+                    l.info("Permission denied for" + tmp)
                 f.close()
             l.info("reducer files are created")
                 

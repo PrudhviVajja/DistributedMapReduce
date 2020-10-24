@@ -34,7 +34,7 @@ The Mapper task reads the contents of the corresponding input split. It parses k
 
 The Reducers read the intermediate keys allocated to its input split. it passes the key and the corresponding set of values to the user’s Reduce function. and then all the outputs of reducers are combined to form the final output file.
 
-#### Design Flow
+#### Flow Chart
 
 ```mermaid
 graph TD;
