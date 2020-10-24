@@ -63,6 +63,17 @@ class Master(rpyc.Service):
 
     def exposed_initcluster(self, map_count, red_count, filename, kv_ip, kv_port, func):
         l.info("Client has started init_cluster..")
+        
+        # Intialize Mappers:
+        self.mappers = []
+        for i in range(map_count):
+            self.mappers.append('mapper'+str(i))
+            
+        # Intialize Reducers:
+        self.reducers = []
+        for i in range(red_count):
+            self.reducers.append('reducer'+str(i))
+        
         # Connect to KVStore:
         while True:
             try:
@@ -72,7 +83,9 @@ class Master(rpyc.Service):
                 break
             except:
                 continue
-
+            
+        # Intialize empty files for mappers and reducers and set params in kvstore:
+        kvstore_conn.params(map_count, red_count, func)
         # Divide data accoring to mappers:
         try:
             if func == 'wordcount':
@@ -83,8 +96,7 @@ class Master(rpyc.Service):
                     tmp = 'mapper' + str(i) + '.txt'
                     kvstore_conn.save_to_file(data, tmp)
                 f.close()
-                l.info("Data is splited")
-                return True
+                l.info("Data is splited according to mappers and stored at kvstore.")
             elif func == 'invertindex':
                 files = glob.glob1('invertindex', "*.txt")
                 for i, f in enumerate(files):
@@ -98,33 +110,123 @@ class Master(rpyc.Service):
 
     def exposed_run_mapreduce(self, map_count, red_count, kv_ip, kv_port, func):
         # Start Mappers
+        l.info("Starting Mappers")
         self.start_mappers(map_count, kv_ip, kv_port)
+        
+        l.info("Waiting for mappers to start")
+        time.sleep(30) # Waiting for mappers to start....
+        
+        if len(self.map_ips) != len(self.mappers):
+            l.error("Required number of mappers are not created.")
+        
+        
+        l.info("Waiting for master to connect to mappers Ips")
+        # Connect to mappers
+        self.mapper_conn = [] 
+        for mapper,ip in zip(self.mappers, self.map_ips):
+            while True:
+                try:
+                    conn = rpyc.connect(ip, 8080, config={'allow_pickle': True, 'allow_public_attrs': True,
+                                                                    'sync_request_timeout': 240}).root
+                    l.info("connected to" + mapper + "at ip" + ip)
+                    self.mapper_conn.append(conn)
+                    break
+                except:
+                    continue
+        l.info("All Mappers are connected to master")
+        
+        # Assign Tasks to mappers
+        mappers = []
+        for i, mapper in enumerate(self.mapper_conn):
+            filename = 'mapper' + str(i) + '.txt'
+            mappers.append(rpyc.async_(mapper.mapper)(func, filename, kv_ip, kv_port))
+            mappers[i].set_expiry(None)
 
+        # wait till all mappers completes its assigned task
+        for mapper in mappers:
+            while not mapper.ready:
+                continue
+        l.info('Mappers have completed their assigned task...')
+        
+        l.info("Destroy Mappers")
+        # Destroy Mappers:
+        self.destroy_instance(self.mappers)
+        
         # Fault Tolerance
-        self.fault_tolerance()
+        # self.fault_tolerance()
 
         # Start Reducers
-        self.start_reducers(red_count)
+        l.info("Starting Reducers")
+        self.start_reducers(red_count, kv_ip, kv_port)
+        
+        
+        l.info("Waiting for reducers to start")
+        time.sleep(30) # Waiting for mappers to start....
+        
+        if len(self.red_ips) != len(self.reducers):
+            l.error("Required number of reducers are not created.")
+        
+        # Connect to reducers
+        self.reducer_conn = [] 
+        for reducer,ip in zip(self.reducers, self.red_ips):
+            while True:
+                try:
+                    conn = rpyc.connect(ip, 8080, config={'allow_pickle': True, 'allow_public_attrs': True,
+                                                                    'sync_request_timeout': 240}).root
+                    l.info("connected to" + reducer + "at ip" + ip)
+                    self.reducer_conn.append(conn)
+                    break
+                except:
+                    continue
+        l.info("All Reducers are connected to Master")
+        
+        # Assign Tasks to reducers:
+        reducers = []
+        for i, reducer in enumerate(self.reducer_conn):
+            filename = 'reducer' + str(i) + '.txt'
+            reducers.append(rpyc.async_(reducer.reducer)(func, filename, kv_ip, kv_port))
+            reducers[i].set_expiry(None)
+
+        # wait till all reducers completes its assigned task
+        for reducer in reducers:
+            while not reducer.ready:
+                continue
+            
+        l.info('Reducers have completed their assigned task...')
+        
+        l.info("Destroy reducers")
+        # Destroy Reducers:
+        self.destroy_instance(self.reducers)
+        
 
     def start_mappers(self, map_count, kv_ip, kv_port):
-        self.map_ips = []
-        for i in range(map_count):
-            mapper_operation = gcp.create_instance(
-                compute, project, zone, "mapper", "mapper.sh")
-            gcp.wait_for_operation(
-                compute, project, zone, mapper_operation['name'])
-            map_ip = gcp.get_ipaddress(compute, project, zone, "mapper")
-            self.map_ips.append(map_ip[0])
+        self.map_ips = [] # Ip address of mappers
+        for mapper in self.mappers:
+            try:
+                mapper_operation = gcp.create_instance(compute, project, zone, mapper, "mapper.sh")
+                gcp.wait_for_operation(compute, project, zone, mapper_operation['name'])
+                map_ip = gcp.get_ipaddress(compute, project, zone, mapper)
+                self.map_ips.append(map_ip[0])
+                l.info(mapper + "Instance is created sucessfully.")
+            except:
+                l.error("unable to create" + mapper)
+            
 
-    def start_reducers(self, red_count):
+    def start_reducers(self, red_count, kv_ip, kv_port):
         self.red_ips = []
-        for i in range(red_count):
-            reducer_operation = gcp.create_instance(
-                compute, project, zone, "reducer", "reducer.sh")
-            gcp.wait_for_operation(
-                compute, project, zone, reducer_operation['name'])
-            red_ip = gcp.get_ipaddress(compute, project, zone, "reducer")
-            self.red_ips.append(red_ip[0])
+        for reducer in self.reducers:
+            try:
+                reducer_operation = gcp.create_instance(compute, project, zone, reducer, "reducer.sh")
+                gcp.wait_for_operation(compute, project, zone, reducer_operation['name'])
+                red_ip = gcp.get_ipaddress(compute, project, zone, "reducer")
+                self.red_ips.append(red_ip[0])
+                l.info(reducer + "Instance is created sucessfully.")
+            except:
+                l.error("unable to create" + reducer)
+                
+    def destroy_instance(self, list_of_instance):
+        for instance in list_of_instance:
+            gcp.delete_instance(compute, project, zone, instance)
 
     def split_data(self, filename, num_map, func):
         try:
@@ -154,16 +256,16 @@ class Master(rpyc.Service):
     def exposed_status(self, status):
         print(status)
 
-    def exposed_connkv(self, ip, port):
-        # while True:
-        try:
-            kvstore_conn = rpyc.connect(ip, port, config={
-                                        'allow_pickle': True, 'allow_public_attrs': True}).root
-            l.info("Master is connected to Kvstore.")
-            tmp = kvstore_conn.ack("Hey!")
-            return tmp + "Connected to KV Store."
-        except:
-            return "Not connected to KV."
+    # def exposed_connkv(self, ip, port):
+    #     # while True:
+    #     try:
+    #         kvstore_conn = rpyc.connect(ip, port, config={
+    #                                     'allow_pickle': True, 'allow_public_attrs': True}).root
+    #         l.info("Master is connected to Kvstore.")
+    #         tmp = kvstore_conn.ack("Hey!")
+    #         return tmp + "Connected to KV Store."
+    #     except:
+    #         return "Not connected to KV."
 
     def exposed_ack(self, var):
         return var
@@ -178,7 +280,8 @@ if __name__ == "__main__":
     compute = googleapiclient.discovery.build(
         'compute', 'v1', credentials=credentials)
     project = 'prudhvi-vajja'
-    zone = 'northamerica-northeast1-a'
+    # zone = 'northamerica-northeast1-a'
+    zone = 'us-central1-b'
 
     port = 8080
     try:

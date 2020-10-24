@@ -18,20 +18,6 @@ class KV_store(rpyc.Service):
     
     def __init__(self):
         pass
-        # global filename
-        # global num_red
-        # global num_map
-        # self.num_red = num_red
-        # self.num_map = num_map
-        # self.folder = filename
-        # global function
-        
-        # if function == 'invertindex':
-        #     self.mapper = {}
-        #     self.files = glob.glob1(self.folder,"*.txt")
-        #     for i,f in enumerate(self.files):
-        #         self.mapper['mapper'+str(i)] = f
-        # print(self.mapper)
 
     def on_connect(self, conn):
         # print(f"{conn} got Connected......!") # What to do when connected
@@ -41,10 +27,87 @@ class KV_store(rpyc.Service):
         # print(f"{conn} got DisConnected......!") # What to do when disconnected
         pass
     
+    def exposed_params(self, map_count, red_count, func):
+        self.func = func
+        self.num_map = map_count
+        self.num_red = red_count
+        try:
+            for i in range(self.num_red):
+                tmp = 'reducer' + str(i) + '.txt'
+                if os.path.exists(tmp):
+                    os.remove(tmp)
+                f = open(tmp, "x")
+                f.close()
+                
+            if self.func == 'wordcount':
+                for i in range(self.num_map):
+                    tmp = 'mapper' + str(i) + '.txt'
+                    if os.path.exists(tmp):
+                        os.remove(tmp)
+                    f = open(tmp, "x")
+                    f.close()
+            
+            tmp = self.func + '.txt'
+            if os.path.exists(tmp):
+                os.remove(tmp)
+                f = open(tmp, "x")
+                f.close()
+        except:
+            print("Didn't create empty files for write operations.")
+    
     def exposed_save_to_file(self, data, filename):
         t = open(filename, "w")
         t.write("".join(data))
         t.close()
+        
+    def exposed_get_map_data(self, func, filename):
+        data = open(filename, 'r').read()
+        return data
+
+    def exposed_set(self, word, cnt):
+        try:
+            hash_map = int.from_bytes(hashlib.md5(word.encode()).digest(), 'big') % self.num_red
+            tmp = 'reducer' + str(hash_map) + '.txt'
+            output = open(tmp, 'a')
+            output.write(word + ',' + str(cnt) + '\n')
+            output.close()
+        except:
+            print("mapper is not able append values.")
+            
+    def exposed_i_set(self, word, cnt, f=""):
+        try:
+            hash_map = int.from_bytes(hashlib.md5(word.encode()).digest(), 'big') % self.num_red
+            tmp = 'reducer' + str(hash_map) + '.txt'
+            output = open(tmp, 'a')
+            output.write(word + ',' + str(cnt) + ',' + f + '\n')
+            output.close()
+        except:
+            print("mapper is not able append values.")
+
+    def exposed_get_red_data(self, func, filename):
+        try:          
+            # files = glob.glob(f'*.{extension}')
+            with open(filename, 'r') as f:
+                data = f.read()
+                return data
+        except:
+            print("Data for reducer is not ready")
+    
+    def exposed_final_set(self, word, cnt, func):
+        try:
+            tmp = func + '.txt'
+            if func == 'wordcount':
+                output = open(tmp, 'a')
+                output.write(word + ',' + str(cnt) + '\n')
+                output.close()
+            elif func == 'invertindex':
+                output = open(tmp, 'a')
+                output.write(word + '=>' + str(cnt) + '\n')
+        except:
+            l.error("Error in writing output file.")  
+    
+    def exposed_get_files(self, filename):
+        return glob.glob1(filename,"*.txt")
     
     # def exposed_split(self, filename, num_map, func):
     #     try:
@@ -69,8 +132,7 @@ class KV_store(rpyc.Service):
     #         l.error("Unable to split data as per requirment.")
             
         
-    # def exposed_get_files(self):
-    #     return glob.glob1(self.folder,"*.txt")
+    
     
         
     # def exposed_map_data(self, i, func):
@@ -90,88 +152,14 @@ class KV_store(rpyc.Service):
     #     except:
     #         l.error(f"data for mapper {i} is not read")
         
-    # def exposed_red_data(self, i):
-    #     try:
-    #         extension = '.txt'
-    #         tmp = 'reducer' + str(i) + extension          # files = glob.glob(f'*.{extension}')
-    #         with open(tmp, 'r') as f:
-    #             data = f.read()
-    #             return data
-    #     except:
-    #         l.error(f"Data for reducer {i} is not ready")
+
 
     # # def exposed_status(self, status):
     # #     print(status)
     #     # l.info(status)
-
-    # def exposed_create_files(self, num_map, num_red, func):
-    #     try:
-    #         self.num_red = num_red
-    #         self.num_map = num_map
             
-    #         for i in range(self.num_red):
-    #             tmp = 'reducer' + str(i) + '.txt'
-    #             if os.path.exists(tmp):
-    #                 os.remove(tmp)
-    #             f = open(tmp, "x")
-    #             f.close()
-                
-    #         if func == 'wordcount':
-    #             for i in range(self.num_map):
-    #                 tmp = 'mapper' + str(i) + '.txt'
-    #                 if os.path.exists(tmp):
-    #                     os.remove(tmp)
-    #                 f = open(tmp, "x")
-    #                 f.close()
-            
-    #         tmp = func + '.txt'
-    #         if os.path.exists(tmp):
-    #             os.remove(tmp)
-    #             f = open(tmp, "x")
-    #             f.close()
-    #     except:
-    #         l.error("hasn't created empty files for I/O operations Should not be a problem.")
-            
-    # def exposed_i_set(self, word, cnt, f=""):
-    #     try:
-    #         hash_map = int.from_bytes(hashlib.md5(word.encode()).digest(), 'big') % self.num_red
-    #         tmp = 'reducer' + str(hash_map) + '.txt'
-    #         output = open(tmp, 'a')
-    #         output.write(word + ',' + str(cnt) + ',' + f + '\n')
-    #         output.close()
-    #     except:
-    #         l.error(f"mapper {i} is not able append values.")
-
-    # def exposed_set(self, word, cnt):
-    #     try:
-    #         hash_map = int.from_bytes(hashlib.md5(word.encode()).digest(), 'big') % self.num_red
-    #         tmp = 'reducer' + str(hash_map) + '.txt'
-    #         output = open(tmp, 'a')
-    #         output.write(word + ',' + str(cnt) + '\n')
-    #         output.close()
-    #     except:
-    #         l.error(f"mapper {i} is not able append values.")
         
-    # def exposed_final_i_set(self, word, cnt):
-    #     try:
-    #         output = open(tmp, 'a')
-    #         output.write(word + ',' + str(cnt) + '\n')
-    #         output.close()
-    #     except:
-    #         l.error("Error in writing output file.")   
-        
-    # def exposed_final_set(self, word, cnt, func):
-    #     try:
-    #         tmp = func + '.txt'
-    #         if func == 'wordcount':
-    #             output = open(tmp, 'a')
-    #             output.write(word + ',' + str(cnt) + '\n')
-    #             output.close()
-    #         elif func == 'invertindex':
-    #             output = open(tmp, 'a')
-    #             output.write(word + '=>' + str(cnt) + '\n')
-    #     except:
-    #         l.error("Error in writing output file.")   
+ 
         
     # def exposed_stop(self):
     #     pid = os.getpid()

@@ -33,8 +33,8 @@ echo $(pwd)
 cd /usr/mapreduce/DistributedMapReduce
 
 echo $(pwd)
+
 echo $(ls)
 ls
-
-sudo chmod +x reducer.py # Executable permissions to the file
-nohup /usr/mapreduce/DistributedMapReduce/reducer.py &
+sudo chmod +x mapper.py # Executable permissions to the file
+nohup /usr/mapreduce/DistributedMapReduce/mapper.py &
