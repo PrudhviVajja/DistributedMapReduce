@@ -9,6 +9,16 @@ import rpyc
 from rpyc.utils.server import ThreadedServer
 from collections import defaultdict
 import time
+import logging as l
+
+# # Logging File:
+log_file = "reducer_log.log"
+if not os.path.exists(log_file):
+    print("Creating Log File if it doesn't exists.")
+    f = open(log_file, 'x')
+    f.close()
+l.basicConfig(filename=log_file, filemode="a",
+              format="Filename : %(filename)s--Line number: %(lineno)d--Process is: %(process)d--Time: %(asctime)s--%(message)s", level=l.INFO)
 
 
 class Reducer(rpyc.Service):
@@ -37,8 +47,10 @@ class Reducer(rpyc.Service):
         # Get Data from kv store:
         try:
             data = kv_conn.get_red_data(func, filename)
+            l.info(data)
+            l.info("data is received.")
         except:
-            print("Unable to load data.")
+            l.info("Unable to load data.")
             # return "Unable to load Data."
 
         if func == 'wordcount':
@@ -56,7 +68,7 @@ class Reducer(rpyc.Service):
                 for key, value in in_memory.items():
                     kv_conn.final_set(key, value, function)
             except:
-                print("Error in mapper function for word count")
+                l.info("Error in mapper function for word count")
 
         if func == 'invertindex':
             try:
@@ -76,7 +88,7 @@ class Reducer(rpyc.Service):
                 for key, value in in_memory.items():
                     kv_conn.final_set(key, value, function)
             except:
-                print("Unable to run invert index")
+                l.info("Unable to run invert index")
 
     def exposed_ack(self, var):
         return var
@@ -91,41 +103,3 @@ if __name__ == "__main__":
         t.start()
     except Exception:
         t.stop()
-
-
-def reducer(i, kv_port, m_port, function):
-
-    red_kv_conn = rpyc.connect("localhost", kv_port, config={
-                               'allow_pickle': True, 'allow_public_attrs': True}).root
-    red_mas_conn = rpyc.connect("localhost", m_port, config={
-                                'allow_pickle': True, 'allow_public_attrs': True}).root
-
-    red_mas_conn.status(f"reducer {i} is connected to the Master")
-    red_kv_conn.status(f"reducer {i} is connected to the KV store.")
-    if function == 'wordcount':
-        data = red_kv_conn.red_data(i)
-        words = data.split()
-
-        in_memory = {}
-        for word in words:
-            w = word.split(',')[0]
-            if w in in_memory:
-                in_memory[w] += 1
-            else:
-                in_memory[w] = 1
-
-        # print(in_memory)
-        for key, value in in_memory.items():
-            red_kv_conn.final_set(key, value, function)
-
-        red_mas_conn.status(f"reducer {i} got completed")
-        red_kv_conn.status(f"reducer {i} sent all the data to kv store")
-
-    elif function == 'invertindex':
-        data = red_kv_conn.red_data(i)
-
-        red_mas_conn.status(f"reducer {i} got completed")
-        red_kv_conn.status(f"reducer {i} sent all the data to kv store")
-
-    else:
-        red_mas_conn.status(f"{function} is not implemented in the Reducer")

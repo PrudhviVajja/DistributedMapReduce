@@ -154,43 +154,43 @@ class Master(rpyc.Service):
         # self.fault_tolerance()
 
         # Start Reducers
-        # l.info("Starting Reducers")
-        # self.start_reducers(red_count, kv_ip, kv_port)
+        l.info("Starting Reducers")
+        self.start_reducers(red_count, kv_ip, kv_port)
         
         
-        # # l.info("Waiting for reducers to start")
-        # # time.sleep(30) # Waiting for mappers to start....
+        # l.info("Waiting for reducers to start")
+        # time.sleep(30) # Waiting for mappers to start....
         
-        # if len(self.red_ips) != len(self.reducers):
-        #     l.error("Required number of reducers are not created.")
+        if len(self.red_ips) != len(self.reducers):
+            l.error("Required number of reducers are not created.")
         
-        # # Connect to reducers
-        # self.reducer_conn = [] 
-        # for reducer,ip in zip(self.reducers, self.red_ips):
-        #     while True:
-        #         try:
-        #             conn = rpyc.connect(ip, 8080, config={'allow_pickle': True, 'allow_public_attrs': True,
-        #                                                             'sync_request_timeout': 240}).root
-        #             l.info("connected to" + reducer + "at ip" + ip)
-        #             self.reducer_conn.append(conn)
-        #             break
-        #         except:
-        #             continue
-        # l.info("All Reducers are connected to Master")
+        # Connect to reducers
+        self.reducer_conn = [] 
+        for reducer,ip in zip(self.reducers, self.red_ips):
+            while True:
+                try:
+                    conn = rpyc.connect(ip, 8080, config={'allow_pickle': True, 'allow_public_attrs': True,
+                                                                    'sync_request_timeout': 240}).root
+                    l.info("connected to" + reducer + "at ip" + ip)
+                    self.reducer_conn.append(conn)
+                    break
+                except:
+                    continue
+        l.info("All Reducers are connected to Master")
         
-        # # Assign Tasks to reducers:
-        # reducers = []
-        # for i, reducer in enumerate(self.reducer_conn):
-        #     filename = 'reducer' + str(i) + '.txt'
-        #     reducers.append(rpyc.async_(reducer.reducer)(func, filename, kv_ip, kv_port))
-        #     reducers[i].set_expiry(None)
+        # Assign Tasks to reducers:
+        reducers = []
+        for i, reducer in enumerate(self.reducer_conn):
+            filename = 'reducer' + str(i) + '.txt'
+            reducers.append(rpyc.async_(reducer.reducer)(func, filename, kv_ip, kv_port))
+            reducers[i].set_expiry(None)
 
-        # # wait till all reducers completes its assigned task
-        # for reducer in reducers:
-        #     while not reducer.ready:
-        #         continue
+        # wait till all reducers completes its assigned task
+        for reducer in reducers:
+            while not reducer.ready:
+                continue
             
-        # l.info('Reducers have completed their assigned task...')
+        l.info('Reducers have completed their assigned task...')
         
         # l.info("Destroy reducers")
         # # Destroy Reducers:
@@ -216,7 +216,7 @@ class Master(rpyc.Service):
             try:
                 reducer_operation = gcp.create_instance(compute, project, zone, reducer, "reducer.sh")
                 gcp.wait_for_operation(compute, project, zone, reducer_operation['name'])
-                red_ip = gcp.get_ipaddress(compute, project, zone, "reducer")
+                red_ip = gcp.get_ipaddress(compute, project, zone, reducer)
                 self.red_ips.append(red_ip[0])
                 l.info(reducer + "Instance is created sucessfully.")
             except:
