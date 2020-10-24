@@ -68,11 +68,12 @@ if __name__ == "__main__":
     # print(master_conn.connkv(kvstore_ip[0], kv_port))
     
     master_conn.initcluster(num_map, num_red, filename, kvstore_ip[0], kv_port, func)
-    
+    print('done')
         
     print("Running Mapreduce in master server.")
     # Run MapReduce
     master_conn.run_mapreduce(num_map, num_red, kvstore_ip[0], kv_port, func)
+    print("done")
     
     print("Make File Executed...")
     # Destroy cluster

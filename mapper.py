@@ -9,8 +9,17 @@ import rpyc
 from rpyc.utils.server import ThreadedServer
 import hashlib
 import re
+import logging as l
 import time
 
+# # Logging File:
+log_file = "mapper_log.log"
+if not os.path.exists(log_file):
+    print("Creating Log File if it doesn't exists.")
+    f = open(log_file, 'x')
+    f.close()
+l.basicConfig(filename=log_file, filemode="a",
+              format="Filename : %(filename)s--Line number: %(lineno)d--Process is: %(process)d--Time: %(asctime)s--%(message)s", level=l.INFO)
 
 class Mapper(rpyc.Service):
     
@@ -38,8 +47,10 @@ class Mapper(rpyc.Service):
         # Get Data from kv store:
         try:
             data = kv_conn.get_map_data(func, filename)
+            l.info(data)
+            l.info("Data is loaded.")
         except:
-            print("Unable to load data.")
+            l.info("Unable to load data.")
             # return "Unable to load Data."
             
         try:
@@ -50,7 +61,7 @@ class Mapper(rpyc.Service):
                     word = word.lower()
                     kv_conn.set(word, 1)
         except:
-            print("Error in mapper function for word count")
+            l.info("Error in mapper function for word count")
             
         if func == 'invertindex':
             try:
@@ -60,7 +71,7 @@ class Mapper(rpyc.Service):
                     word = word.lower()
                     kv_conn.i_set(word, 1, func)
             except:
-                print("Unable to run invert index")
+                l.info("Unable to run invert index")
         
     def exposed_ack(self, var):
         return var

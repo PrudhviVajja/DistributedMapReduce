@@ -11,8 +11,16 @@ import glob
 import hashlib
 from rpyc.utils.server import ThreadedServer
 from configparser import ConfigParser # module to read config file
+import logging as l
 
-
+# # Logging File:
+log_file = "kvstore_log.log"
+if not os.path.exists(log_file):
+    print("Creating Log File if it doesn't exists.")
+    f = open(log_file, 'x')
+    f.close()
+l.basicConfig(filename=log_file, filemode="a",
+              format="Filename : %(filename)s--Line number: %(lineno)d--Process is: %(process)d--Time: %(asctime)s--%(message)s", level=l.INFO)
 
 class KV_store(rpyc.Service):
     
@@ -38,6 +46,7 @@ class KV_store(rpyc.Service):
                     os.remove(tmp)
                 f = open(tmp, "x")
                 f.close()
+            l.info("reducer files are created")
                 
             if self.func == 'wordcount':
                 for i in range(self.num_map):
@@ -46,23 +55,33 @@ class KV_store(rpyc.Service):
                         os.remove(tmp)
                     f = open(tmp, "x")
                     f.close()
+                l.info("mapper files are created ")
             
             tmp = self.func + '.txt'
             if os.path.exists(tmp):
                 os.remove(tmp)
                 f = open(tmp, "x")
                 f.close()
+            l.info("final output file is created.")
         except:
-            print("Didn't create empty files for write operations.")
+            l.info("Didn't create empty files for write operations.")
     
     def exposed_save_to_file(self, data, filename):
-        t = open(filename, "w")
-        t.write("".join(data))
-        t.close()
+        try:
+            t = open(filename, "w")
+            t.write("".join(data))
+            t.close()
+        except:
+            l.info("Didn't receive file to save at kvstore.")
         
     def exposed_get_map_data(self, func, filename):
-        data = open(filename, 'r').read()
-        return data
+        try:
+            data = open(filename, 'r').read()
+            l.info(data)
+            l.info("data is send to mapper")
+            return data
+        except:
+            l.info("No data to send to mapper")
 
     def exposed_set(self, word, cnt):
         try:
@@ -72,7 +91,7 @@ class KV_store(rpyc.Service):
             output.write(word + ',' + str(cnt) + '\n')
             output.close()
         except:
-            print("mapper is not able append values.")
+            l.info("mapper is not able append values.")
             
     def exposed_i_set(self, word, cnt, f=""):
         try:
