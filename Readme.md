@@ -39,8 +39,20 @@ The Reducers read the intermediate keys allocated to its input split. it passes 
 ```mermaid
 graph TD;
 		A(User Program)-->|creates and connects|B(Master Server);
-		A(User Program)-->C(Key Value Server);
-		B(Master Server)-->D(Mapper);
+		A(User Program)-->|creates|C(Key Value Server);
+		B(Master Server)-->|splits data and stores|C(Key Value Server);
+		B(Master Server)-->|creates|D1(Mapper);
+		B(Master Server)-->|creates|D2(Mapper);
+		B(Master Server)-->|creates|D3(Mapper);
+		D1(Mapper)-->|read and maps data|C(Key Value Server);
+		D2(Mapper)-->|read and maps data|C(Key Value Server);
+		D3(Mapper)-->|read and maps data|C(Key Value Server);
+		B(Master Server)-->|creates|E1(Reducer);
+		B(Master Server)-->|creates|E2(Reducer);
+		B(Master Server)-->|creates|E3(Reducer);
+		E1(Reducer)-->|read and reduce data|C(Key Value Server);
+		E2(Reducer)-->|read and reduce data|C(Key Value Server);
+		E3(Reducer)-->|read and reduce data|C(Key Value Server);
 		
 ```
 
