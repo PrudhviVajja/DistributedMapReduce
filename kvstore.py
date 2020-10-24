@@ -88,7 +88,8 @@ class KV_store(rpyc.Service):
             l.info(data)
             l.info("data is send to mapper")
             return data
-        except:
+        except Exception as e:
+            l.error(e)
             l.info("No data to send to mapper")
 
     def exposed_set(self, word, cnt):

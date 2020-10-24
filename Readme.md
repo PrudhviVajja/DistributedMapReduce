@@ -47,9 +47,9 @@ graph TD;
 		D1(Mapper)-->|read and maps data|C(Key Value Server);
 		D2(Mapper)-->|read and maps data|C(Key Value Server);
 		D3(Mapper)-->|read and maps data|C(Key Value Server);
-		B(Master Server)-->|creates|E1(Reducer);
-		B(Master Server)-->|creates|E2(Reducer);
-		B(Master Server)-->|creates|E3(Reducer);
+		B(Master Server)-->|creates after mappers|E1(Reducer);
+		B(Master Server)-->|creates after mappers|E2(Reducer);
+		B(Master Server)-->|creates after mappers|E3(Reducer);
 		E1(Reducer)-->|read and reduce data|C(Key Value Server);
 		E2(Reducer)-->|read and reduce data|C(Key Value Server);
 		E3(Reducer)-->|read and reduce data|C(Key Value Server);
@@ -58,30 +58,31 @@ graph TD;
 
 
 
-
-
 **Extra files :** 
 
 - `config.ini` : To define the ports, task, IP-Address, input file/folder path, etc...
-- `run.sh`: This is similar to **User Program** in the original MapReduce to stimulate the MapReduce task.
+- `Makefile.py`: This is similar to **User Program** in the original MapReduce to stimulate the MapReduce task.
 - `log files`: files generated after every run to track the flow of execution and get notified of any errors and warnings.
-- `del.sh`: To delete all the intermediate files created for processing.
 
 ### How Does it work?
 
 1. Configure the `config.ini` file according to the requirements (such as port numbers, input file location, etc..)
-2. Run `run.sh` bash file. 
-3. The Key-Value server gets started.
-4. The Master server gets started.
-5. Master connects to the Key-Value server and splits the input file according to the number of mappers given.
-6. Master then spawns mappers using different `Processes ` to run parallelly mimicking the original MapReduce. 
-7. Mappers connect to the master and key-value server and the reads respective input splits and sends it to the map function for further processing.
-8. After parsing all the key/value pairs mapper writes the intermediate outputs to the key-value store by hashing each key to their respective reducer inputs.
-9. After all the mappers are completed master receives an acknowledgment and spawns reducers to complete the remaining task.
-10.  Each reducer processed in parallel reads their respective input splits and combines the value of each key depending on the `function` provided.
-11. After completing the task all the reducers write their output to the final_output file at the key-value server and sends an acknowledgment to the master.
-12. Master then closes the key-value server and terminates.  
-13. Run `del.sh` to remove intermideate files and kill the process if it's still running. (uncomment in the line in `run.sh` file)
+2. Run `Makefile.py` file. 
+3. The Key-Value server gets started on a GCP instance named `kvstore`.
+4. The Master server gets started on aGCP instance named `master`.
+5. MakeFile Connects to Master server and requests  `init_cluster.`
+6. Master connects to the Key-Value server and splits the input file according to the number of mappers given.
+7. MakeFile later requests for  `runmapreduce` 
+8. Master then spawns mappers Asynchronosuly to run parallelly on different instances.(mapper is also a server) 
+9. Master then connects to mappers to assign map task for all mappers.
+10. Mappers reads allocated data from kvstrore and writes the (key, values) to key value store.
+11. When all mappers completes their tasks master receives an acknowledgment to trigger 
+12. Mappers connect to the master and key-value server and the reads respective input splits and sends it to the map function for further processing.
+13. After parsing all the key/value pairs mapper writes the intermediate outputs to the key-value store by hashing each key to their respective reducer inputs.
+14. After all the mappers are completed master receives an acknowledgment and spawns reducers to complete the remaining task.
+15. Each reducer processed in parallel reads their respective input splits and combines the value of each key depending on the `function` provided.
+16. After completing the task all the reducers write their output to the final_output file at the key-value server and sends an acknowledgment to the master.
+17. Makefile  then closes the key-value server and master for cost effectiveness.  
 
 Output files : **`wordcount.txt`, `invertindex.txt`**
 
@@ -95,16 +96,14 @@ Output files : **`wordcount.txt`, `invertindex.txt`**
 
 - In the current implmentation any error in the program requires the user to restart the application by checking the appropriate log files. 
 
-
-
 ### Comparisions with original implementation:
 
-|                      Original MapReduce                      |                       Local MapReduce                        |
+|                      Original MapReduce                      |                         MY MapReduce                         |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 |             Fault Tolerance was very effective.              |         You need to restart if there are any errors.         |
 | Reducer task sort the intermediate keys from the mapper output applies the reduce function on respective keys. | Mappers outputs are stored using the hash technique (`hash(key)%num_reducers`) to their respective reducers for further reductions. |
 | Combiners are used to combine Intermediate data which helps in increasing the speed of reducers and overall application significantly. |             Combiner tasks are not implemented.              |
-| No progress bars to track the mapper expect acknowledgment.  | Progress bars to keep track of all the mappers and reducers parallely. |
+|                                                              |                                                              |
 
 ## Assumptions
 
@@ -113,6 +112,41 @@ Output files : **`wordcount.txt`, `invertindex.txt`**
 - Mappers and Reducers are limited to number of cores.
 - All the files along with input file/folder need to be located in the same folder.
 - Accepected tasks are word count and invert index.
+
+# Cloud Test Cases:
+
+- **[Create Instance:](https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/compute/api/create_instance.py)**
+
+  ```python
+  # Create Master:
+  master_operation = gcp.create_instance(compute, project, zone, "master", "master.sh")
+  gcp.wait_for_operation(compute, project, zone, master_operation['name'])
+  
+  master_ip = gcp.get_ipaddress(compute, project, zone, 'master')
+  print(master_ip[0], master_ip[1], type(master_ip[1]))
+  
+  >>> Output
+  ➜  MapReduce git:(master) ✗ python3 Makefile.py
+  Waiting for operation to finish...
+  done.
+  10.128.0.48 35.222.184.4 <class 'str'> # Master is created at this Ipaddress
+  ```
+
+  ![](assets/gcpinstance.png)
+
+- **Connect to master and run acknowledgment function.**
+
+  ![](assets/master_conn.png) 
+
+- **Delete an instance**
+
+  ![](assets/delete.png)
+
+<img src="assets/deletegcp.png" style="zoom:75%;" />
+
+
+
+
 
 #### Sample Test Cases:
 

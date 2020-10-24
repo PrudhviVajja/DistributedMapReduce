@@ -1,0 +1,49 @@
+Filename : __init__.py--Line number: 48--Process is: 2448--Time: 2020-10-24 03:48:57,182--file_cache is unavailable when using oauth2client >= 4.0.0 or google-auth
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/googleapiclient/discovery_cache/file_cache.py", line 33, in <module>
+    from oauth2client.contrib.locked_file import LockedFile
+ImportError: No module named 'oauth2client.contrib.locked_file'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/googleapiclient/discovery_cache/file_cache.py", line 37, in <module>
+    from oauth2client.locked_file import LockedFile
+ImportError: No module named 'oauth2client.locked_file'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/googleapiclient/discovery_cache/__init__.py", line 44, in autodetect
+    from . import file_cache
+  File "/usr/local/lib/python3.5/dist-packages/googleapiclient/discovery_cache/file_cache.py", line 41, in <module>
+    "file_cache is unavailable when using oauth2client >= 4.0.0 or google-auth"
+ImportError: file_cache is unavailable when using oauth2client >= 4.0.0 or google-auth
+Filename : server.py--Line number: 252--Process is: 2448--Time: 2020-10-24 03:48:57,906--server started on [0.0.0.0]:8080
+Filename : server.py--Line number: 158--Process is: 2448--Time: 2020-10-24 03:49:16,824--accepted ('73.146.117.135', 61341) with fd 5
+Filename : server.py--Line number: 201--Process is: 2448--Time: 2020-10-24 03:49:16,824--welcome ('73.146.117.135', 61341)
+Filename : master.py--Line number: 65--Process is: 2448--Time: 2020-10-24 03:49:17,191--Client has started init_cluster..
+Filename : master.py--Line number: 71--Process is: 2448--Time: 2020-10-24 03:49:17,192--mapper0is added to list
+Filename : master.py--Line number: 71--Process is: 2448--Time: 2020-10-24 03:49:17,192--mapper1is added to list
+Filename : master.py--Line number: 77--Process is: 2448--Time: 2020-10-24 03:49:17,192--reducer0is added to list
+Filename : master.py--Line number: 77--Process is: 2448--Time: 2020-10-24 03:49:17,192--reducer1is added to list
+Filename : master.py--Line number: 84--Process is: 2448--Time: 2020-10-24 03:49:17,195--Master is connected to Kvstore.
+Filename : master.py--Line number: 101--Process is: 2448--Time: 2020-10-24 03:49:17,268--Data is splited according to mappers and stored at kvstore.
+Filename : master.py--Line number: 111--Process is: 2448--Time: 2020-10-24 03:49:17,401--Starting Mappers
+Filename : master.py--Line number: 207--Process is: 2448--Time: 2020-10-24 03:49:25,648--mapper0Instance is created sucessfully  at10.128.0.56port = 8080
+Filename : master.py--Line number: 207--Process is: 2448--Time: 2020-10-24 03:49:32,377--mapper1Instance is created sucessfully  at10.128.0.57port = 8080
+Filename : master.py--Line number: 114--Process is: 2448--Time: 2020-10-24 03:49:32,377--Waiting for mappers to start
+Filename : master.py--Line number: 121--Process is: 2448--Time: 2020-10-24 03:50:02,380--Waiting for master to connect to mappers Ips
+Filename : master.py--Line number: 128--Process is: 2448--Time: 2020-10-24 03:50:13,312--connected tomapper0at ip10.128.0.56
+Filename : master.py--Line number: 128--Process is: 2448--Time: 2020-10-24 03:50:20,286--connected tomapper1at ip10.128.0.57
+Filename : master.py--Line number: 133--Process is: 2448--Time: 2020-10-24 03:50:20,286--All Mappers are connected to master
+Filename : master.py--Line number: 146--Process is: 2448--Time: 2020-10-24 03:50:21,240--Mappers have completed their assigned task...
+Filename : master.py--Line number: 156--Process is: 2448--Time: 2020-10-24 03:50:21,241--Starting Reducers
+Filename : master.py--Line number: 220--Process is: 2448--Time: 2020-10-24 03:50:29,456--reducer0Instance is created sucessfully.
+Filename : master.py--Line number: 220--Process is: 2448--Time: 2020-10-24 03:50:37,340--reducer1Instance is created sucessfully.
+Filename : master.py--Line number: 160--Process is: 2448--Time: 2020-10-24 03:50:37,340--Waiting for reducers to start
+Filename : master.py--Line number: 173--Process is: 2448--Time: 2020-10-24 03:51:16,500--connected toreducer0at ip10.128.0.58
+Filename : master.py--Line number: 173--Process is: 2448--Time: 2020-10-24 03:51:26,577--connected toreducer1at ip10.128.0.59
+Filename : master.py--Line number: 178--Process is: 2448--Time: 2020-10-24 03:51:26,578--All Reducers are connected to Master
+Filename : master.py--Line number: 192--Process is: 2448--Time: 2020-10-24 03:51:26,587--Reducers have completed their assigned task...
+Filename : server.py--Line number: 208--Process is: 2448--Time: 2020-10-24 03:51:26,653--goodbye ('73.146.117.135', 61341)
