@@ -111,8 +111,8 @@ class Master(rpyc.Service):
         l.info("Starting Mappers")
         self.start_mappers(map_count, kv_ip, kv_port)
         
-        # l.info("Waiting for mappers to start")
-        # time.sleep(30) # Waiting for mappers to start....
+        l.info("Waiting for mappers to start")
+        time.sleep(30) # Waiting for mappers to start....
         
         if len(self.map_ips) != len(self.mappers):
             l.error("Required number of mappers are not created.")
@@ -121,11 +121,10 @@ class Master(rpyc.Service):
         l.info("Waiting for master to connect to mappers Ips")
         # Connect to mappers
         self.mapper_conn = [] 
-        for mapper,ip in zip(self.mappers, self.map_ips):
+        for mapper, ip in zip(self.mappers, self.map_ips):
             while True:
                 try:
-                    conn = rpyc.connect(ip, 8080, config={'allow_pickle': True, 'allow_public_attrs': True,
-                                                                    'sync_request_timeout': 240}).root
+                    conn = rpyc.connect(ip, 8080, config={'allow_pickle': True, 'allow_public_attrs': True,'sync_request_timeout': 240}).root
                     l.info("connected to" + mapper + "at ip" + ip)
                     self.mapper_conn.append(conn)
                     break
@@ -158,8 +157,8 @@ class Master(rpyc.Service):
         self.start_reducers(red_count, kv_ip, kv_port)
         
         
-        # l.info("Waiting for reducers to start")
-        # time.sleep(30) # Waiting for mappers to start....
+        l.info("Waiting for reducers to start")
+        time.sleep(30) # Waiting for mappers to start....
         
         if len(self.red_ips) != len(self.reducers):
             l.error("Required number of reducers are not created.")
@@ -205,7 +204,7 @@ class Master(rpyc.Service):
                 gcp.wait_for_operation(compute, project, zone, mapper_operation['name'])
                 map_ip = gcp.get_ipaddress(compute, project, zone, mapper)
                 self.map_ips.append(map_ip[0])
-                l.info(mapper + "Instance is created sucessfully.")
+                l.info(mapper + "Instance is created sucessfully  at" + map_ip[0] + "port = "+ "8080")
             except:
                 l.error("unable to create" + mapper)
             
