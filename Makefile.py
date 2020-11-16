@@ -1,19 +1,10 @@
-import gcp
+import src.utils.gcp
 import rpyc
 import time
 
 import googleapiclient.discovery
 from google.oauth2 import service_account
 from six.moves import input
-
-
-
-# def create_master():
-#     pass
-
-# def create_kvstore():
-#     pass
-
 
 
 if __name__ == "__main__":
@@ -78,39 +69,3 @@ if __name__ == "__main__":
     print("Make File Executed...")
     # Destroy cluster
     
-    
-    
-    
-    # master_conn.init_cluster(2,2, 'data.txt', ["34.122.103.101", "10.128.0.5"], 8080, 'wordcount')
-    
-    
-    
-    # Create KVStore:
-    
-    
-    # instance_name = 'demo-instance'
-
-    # create instance
-    # operation = create_instance(compute, project, zone, instance_name)
-    # wait_for_operation(compute, project, zone, operation['name'])
-
-    #list instances
-    # instances = list_instances(compute, project, zone)
-
-    # print('Instances in project %s and zone %s:' % (project, zone))
-    # for instance in instances:
-    #     print(' - ' + instance['name'])
-
-    #delete instance
-    # operation = delete_instance(compute, project, zone, instance_name)
-    # wait_for_operation(compute, project, zone, operation['name'])
-
-    #list instances
-    # instances = list_instances(compute, project, zone)
-
-    # print('Instances in project %s and zone %s:' % (project, zone))
-    # for instance in instances:
-    #     print(' - ' + instance['name'])
-        
-    # int_ip, ext_ip = getIPAddresses(compute, project, zone, 'test-instance')
-    # print(int_ip, ext_ip)

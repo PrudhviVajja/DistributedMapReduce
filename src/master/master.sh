@@ -51,5 +51,5 @@ echo $(pwd)
 
 echo $(ls)
 ls
-sudo chmod +x master.py # Executable permissions to the file
-nohup /usr/mapreduce/DistributedMapReduce/master.py &
+sudo chmod +x src/master/master.py # Executable permissions to the file
+nohup /usr/mapreduce/DistributedMapReduce/src/master/master.py & #runs in bg

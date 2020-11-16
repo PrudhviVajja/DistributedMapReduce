@@ -37,5 +37,5 @@ echo $(pwd)
 
 echo $(ls)
 ls
-sudo chmod +x mapper.py # Executable permissions to the file
-nohup /usr/mapreduce/DistributedMapReduce/mapper.py &
+sudo chmod +x src/mapper/mapper.py # Executable permissions to the file
+nohup /usr/mapreduce/DistributedMapReduce/src/mapper/mapper.py &

@@ -17,7 +17,7 @@ import googleapiclient.discovery
 from google.oauth2 import service_account
 from six.moves import input
 import logging as l
-import gcp
+import src.utils.gcp
 
 # # Logging File:
 log_file = "master_log.log"
@@ -253,17 +253,6 @@ class Master(rpyc.Service):
     def exposed_status(self, status):
         print(status)
 
-    # def exposed_connkv(self, ip, port):
-    #     # while True:
-    #     try:
-    #         kvstore_conn = rpyc.connect(ip, port, config={
-    #                                     'allow_pickle': True, 'allow_public_attrs': True}).root
-    #         l.info("Master is connected to Kvstore.")
-    #         tmp = kvstore_conn.ack("Hey!")
-    #         return tmp + "Connected to KV Store."
-    #     except:
-    #         return "Not connected to KV."
-
     def exposed_ack(self, var):
         return var
         # for mapp in self.mapper_list:
@@ -296,57 +285,3 @@ if __name__ == "__main__":
         print('Error.!')
         # l.error("Unable to start Master. Check if the given port is available.")
         # sys.exit(0)
-
-    # start = time.time()
-    # p = False
-    # # Read aruguments from config file __init__cluster():
-    # try:
-    #     parser = ConfigParser()
-    #     parser.read('config.ini')
-    #     master_port = int(parser['master']['port'])
-    #     kvstore_port = int(parser['kvserver']['port'])
-    #     filename = parser['inputfile']['filename']
-    #     function = parser['master']['function']
-
-    #     if function == 'wordcount':
-    #         num_map = int(parser['master']['num_map'])
-    #         num_red = int(parser['master']['num_red'])
-    #     elif function == 'invertindex':
-    #         filecount = len(glob.glob1(filename,"*.txt"))
-    #         num_map = filecount
-    #         num_red = filecount
-    #     else:
-    #         print(f"This {function} is not implemented yet 🤺 kill the program.")
-    #         l.warning(f"This {function} is not implemented yet 🤺 kill the program.")
-
-    #     l.info(f"[MapReduce for {function} is getting started with {num_map} Mappers {num_red} Reducers.]")
-
-    #     # Connecting to KV store....
-    #     print("Connecting KV Store..")
-    #     l.info("Connecting KV Store..")
-    #     kv_conn = rpyc.connect("localhost", kvstore_port, config={'allow_pickle':True, 'allow_public_attrs':True}).root
-    #     connect_to_kvstore(filename, num_map, function)
-
-    #     print("Start Master Server")
-    #     l.info("Start Master Server.")
-    #     p = Process(target=start_master, args=(master_port,))
-    #     p.start()
-
-    #     print(f"Starting {num_map} mappers as requested.. wait for some time")
-    #     l.info(f"Starting {num_map} mappers as requested.. wait for some time")
-
-    #     start_mappers(num_map, kvstore_port, master_port, function)
-
-    #     print("Mapping task in done.. Start Reducing")
-    #     l.info("Mapping task in done.. Start Reducing")
-
-    #     start_reducers(num_red, kvstore_port, master_port, function)
-
-    #     print("MapReduce task is Done!")
-    #     l.info("MapReduce task is Done!")
-
-    #     destroy_cluster() # destroy Cluster
-
-    # except:
-    #     l.error("Unable to start the cluster properly check the port numbers properly")
-    #     destroy_cluster()

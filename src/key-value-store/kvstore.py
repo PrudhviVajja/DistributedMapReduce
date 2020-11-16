@@ -137,68 +137,6 @@ class KV_store(rpyc.Service):
     def exposed_get_files(self, filename):
         return glob.glob1(filename,"*.txt")
     
-    # def exposed_split(self, filename, num_map, func):
-    #     try:
-    #         if func == 'wordcount':
-    #             f = open(filename, 'r')
-    #             size = os.stat(filename).st_size
-    #             for i in range(self.num_map):
-    #                 data = f.readlines(size//self.num_map)
-    #                 tmp = 'mapper' + str(i) + '.txt'
-    #                 t = open(tmp, "w")
-    #                 t.write("".join(data))
-    #                 t.close()
-    #             f.close()
-    #             print("Data is splited")
-    #             return True
-    #         elif func == 'invertindex':
-    #             files = glob.glob1('invertindex',"*.txt")
-    #             for i,f in enumerate(files):
-    #                 self.mapper['mapper'+str(i)] = f
-    #             print(self.mapper)
-    #     except:
-    #         l.error("Unable to split data as per requirment.")
-            
-        
-    
-    
-        
-    # def exposed_map_data(self, i, func):
-    #     try:
-    #         if func == 'wordcount':
-    #             extension = '.txt'
-    #             filename = 'mapper' + str(i) + extension
-    #             with open(filename, 'r') as f:
-    #                 data = f.read()
-    #                 return data
-    #         elif func == 'invertindex':
-    #             fi = self.mapper['mapper' + str(i)]
-    #             path = self.folder + '/' + fi
-    #             with open(path, 'r') as f:
-    #                 data = f.read()
-    #                 return data,fi
-    #     except:
-    #         l.error(f"data for mapper {i} is not read")
-        
-
-
-    # # def exposed_status(self, status):
-    # #     print(status)
-    #     # l.info(status)
-            
-        
- 
-        
-    # def exposed_stop(self):
-    #     pid = os.getpid()
-
-    #     if platform.system() == 'Windows':
-    #         PROCESS_TERMINATE = 1
-    #         handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, pid)
-    #         ctypes.windll.kernel32.TerminateProcess(handle, -1)
-    #         ctypes.windll.kernel32.CloseHandle(handle)
-    #     else:
-    #         os.kill(pid, signal.SIGTERM)
 
     def exposed_ack(self, var):
         return var

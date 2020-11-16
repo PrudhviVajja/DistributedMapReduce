@@ -21,7 +21,7 @@ def create_instance(compute, project, zone, name, script):
     machine_type = "zones/%s/machineTypes/n1-standard-1" % zone
     startup_script = open(
         os.path.join(
-            os.path.dirname(__file__), script), 'r').read()
+            os.path.dirname(__file__), script), 'r').read() # need to change path after oranizing code.
 
     config = {
         'name': name,
@@ -114,38 +114,3 @@ def get_ipaddress(compute, project, zone, name):
     internal_ip = instance['networkInterfaces'][0]['networkIP']
     return internal_ip, external_ip
 # [END getIPAddresses]
-
-
-# if __name__ == '__main__':
-#     scopes = ['https://www.googleapis.com/auth/cloud-platform']
-#     sa_file = 'prudhvi-vajja-f62a24ed2484.json'
-#     credentials = service_account.Credentials.from_service_account_file(sa_file, scopes=scopes)
-#     compute = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
-#     project = 'prudhvi-vajja'
-#     zone = 'northamerica-northeast1-a'
-#     instance_name = 'demo-instance'
-    
-#     # create instance
-#     # operation = create_instance(compute, project, zone, instance_name)
-#     # wait_for_operation(compute, project, zone, operation['name'])
-    
-#     #list instances
-#     instances = list_instances(compute, project, zone)
-    
-#     print('Instances in project %s and zone %s:' % (project, zone))
-#     for instance in instances:
-#         print(' - ' + instance['name'])
-    
-#     #delete instance
-#     # operation = delete_instance(compute, project, zone, instance_name)
-#     # wait_for_operation(compute, project, zone, operation['name'])
-    
-#     #list instances
-#     instances = list_instances(compute, project, zone)
-    
-#     print('Instances in project %s and zone %s:' % (project, zone))
-#     for instance in instances:
-#         print(' - ' + instance['name'])
-        
-#     int_ip, ext_ip = getIPAddresses(compute, project, zone, 'test-instance')
-#     print(int_ip, ext_ip)
